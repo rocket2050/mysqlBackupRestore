@@ -1,0 +1,23 @@
+---
+# tasks file for opstree.MysqlBackupRestorer
+
+- name: Creates backup directory ...
+  file: path={{ mySql_backup_file }} state=touch
+
+- name: full mySql backup ...
+  shell: mysqldump -u {{ mySql_userName }} -p{{ mySql_password }} --all-databases=TRUE --events > {{ mySql_backup_file }}
+  when: full_data_backup
+
+- name: mySql backup of a particular database ...
+  shell: mysqldump -u {{ mySql_userName }} -p{{ mySql_password }} {{ mySql_databaseName }} > {{ mySql_backup_file }}
+  when: database_backup
+
+- name: mySql backup of a table in a database ...
+  shell: mysqldump -u {{ mySql_userName }} -p{{ mySql_password }} {{ mySql_databaseName }} {{ mySql_tableName }} > {{ mySql_backup_file }}
+  when: table_backup
+
+- name: Creates tar of backup file ...
+  command: tar -cvf {{ backup_dir }}/Mysql-backup.tar.gz {{ mySql_backup_file }}
+
+- name: upload in s3 bucket ...
+  command: aws s3 cp {{ backup_dir }}/Mysql-backup.tar.gz s3://{{ s3_bucket_name }}/{{ ansible_date_time.date }}/

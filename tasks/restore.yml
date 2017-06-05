@@ -1,0 +1,13 @@
+---
+# tasks file for opstree.MysqlBackupRestorer
+
+- name: Restore mySql backup ...
+  shell: mysql -u {{ mySql_userName }} -p{{ mySql_password }} < {{ mySql_backup_file }}
+  when: restore_backup
+
+- name: mySql restore of a particular database ...
+  shell: mysql -u {{ mySql_userName }} -p{{ mySql_password }} {{ mySql_databaseName }} < {{ mySql_backup_file }}
+  when: restore_database
+
+- name: Deleting backup file ...
+  command: rm {{ mySql_backup_file }}

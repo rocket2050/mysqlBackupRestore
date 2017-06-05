@@ -1,0 +1,10 @@
+---
+# tasks file for opstree.MysqlBackupRestorer
+
+- name: For backup Folder ...
+  include: backup.yml
+  when: backup_only
+
+- name: For restore Folder ...
+  include: restore.yml
+  when: restore_only
